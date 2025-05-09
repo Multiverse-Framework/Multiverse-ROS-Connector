@@ -53,6 +53,9 @@ target_link_libraries(
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/libmultiverse_client_json.a
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/libmultiverse_client.a
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/libjsoncpp.a
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/libzmq.a
+	pthread
 )
 
 target_compile_features(multiverse_control PUBLIC cxx_std_17)
