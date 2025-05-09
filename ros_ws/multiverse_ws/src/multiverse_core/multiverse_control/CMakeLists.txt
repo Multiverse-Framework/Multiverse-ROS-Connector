@@ -26,14 +26,13 @@ catkin_package()
 # ##########
 # # Build ##
 # ##########
-set(MULTIVERSE_DIR ${CMAKE_SOURCE_DIR}/../../../../multiverse)
 
 # # Specify additional locations of header files
 # # Your package locations should be listed before other locations
 include_directories(
 	${catkin_INCLUDE_DIRS}
-	${MULTIVERSE_DIR}/src/multiverse_client/include
   	${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/ext
 )
 link_directories($ENV{ROS_ROOT}/../../lib/)
 
@@ -48,7 +47,9 @@ target_link_libraries(multiverse_hw_interface
 target_link_libraries(${PROJECT_NAME}_node
 	${catkin_LIBRARIES}
 	multiverse_hw_interface
-	jsoncpp
-	zmq
-	${MULTIVERSE_DIR}/lib/libstdc++/libmultiverse_client_json.so
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/libmultiverse_client_json.a
+  	${CMAKE_CURRENT_SOURCE_DIR}/lib/libmultiverse_client.a
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/libjsoncpp.a
+  	${CMAKE_CURRENT_SOURCE_DIR}/lib/libzmq.a
+	pthread
 )
