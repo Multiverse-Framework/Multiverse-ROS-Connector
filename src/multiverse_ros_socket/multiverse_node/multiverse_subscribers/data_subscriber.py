@@ -8,6 +8,7 @@ from .multiverse_subscriber import MultiverseSubscriber, MultiverseMetaData
 
 
 class DataSubscriber(MultiverseSubscriber):
+    _use_meta_data = False
     _body_name: str
 
     def __init__(
@@ -43,9 +44,8 @@ class DataSubscriber(MultiverseSubscriber):
         else:
             raise NotImplementedError(f"msg_type {self._msg_type} not implemented.")
 
-    def _bind_send_data(self, data_msg: Any) -> Any:
+    def _bind_send_data(self, data_msg: Any) -> None:
         if self._msg_type == Float64:
             self.send_data = [self.sim_time, data_msg.data]
         else:
             raise NotImplementedError(f"msg_type {self._msg_type} not implemented.")
-        return data_msg

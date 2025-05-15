@@ -8,6 +8,7 @@ from .multiverse_subscriber import MultiverseSubscriber, MultiverseMetaData
 
 
 class CmdVelSubscriber(MultiverseSubscriber):
+    _use_meta_data = False
     _body_name: str
     _msg_type = Twist
 
@@ -35,7 +36,7 @@ class CmdVelSubscriber(MultiverseSubscriber):
     def _init_send_data(self) -> None:
         self.send_data = [self.sim_time] + [0.0] * 6
 
-    def _bind_send_data(self, twist_msg: Twist) -> Twist:
+    def _bind_send_data(self, twist_msg: Twist) -> None:
         self.send_data = [
             self.sim_time,
             twist_msg.linear.x,
@@ -45,4 +46,3 @@ class CmdVelSubscriber(MultiverseSubscriber):
             twist_msg.angular.y,
             twist_msg.angular.z,
         ]
-        return twist_msg

@@ -15,6 +15,7 @@ from ..multiverse_node import MultiverseNode, MultiverseMetaData
 
 
 class MultiverseSubscriber(MultiverseNode):
+    _use_meta_data: bool = False
     _msg_type = None
     _send_data: List[float] = []
     _receive_data: List[float] = []
@@ -30,6 +31,9 @@ class MultiverseSubscriber(MultiverseNode):
             port=port,
             multiverse_meta_data=multiverse_meta_data
         )
+        self._create_subscriber(topic_name)
+
+    def _create_subscriber(self, topic_name: str) -> None:
         if INTERFACE == Interface.ROS1:
             self._subscriber = rospy.Subscriber(
                 name=topic_name,
@@ -52,10 +56,10 @@ class MultiverseSubscriber(MultiverseNode):
 
     def _subscriber_callback(self, data: Any) -> None:
         self._bind_send_data(data)
-        self._communicate()
+        self._communicate(False)
 
     def _init_send_data(self) -> None:
         pass
 
-    def _bind_send_data(self, data_msg: Any) -> Any:
+    def _bind_send_data(self, data_msg: Any) -> None:
         raise NotImplementedError("Method not implemented.")
