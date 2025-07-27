@@ -98,5 +98,5 @@ class LaserScanPublisher(MultiversePublisher):
                 self._msgs[0].header.stamp = self.get_clock().now().to_msg()
 
             receive_data = numpy.array(self.receive_data[1:], dtype=float)
-            self._msgs[0].ranges = receive_data[laser_ids]
+            self._msgs[0].ranges = receive_data[laser_ids].tolist()
         self.bind_receive_data_callback = bind_receive_data
