@@ -68,25 +68,35 @@ class LaserScanPublisher(MultiversePublisher):
         self._msgs[0].scan_time = 1.0 / rate
         self._msgs[0].range_min = self._range_min
         self._msgs[0].range_max = self._range_max
+        
+        laser_ids = [0.0] * laser_length
+        laser_map = {}
 
         def bind_request_meta_data() -> None:
-            for i in range(laser_length + 1):
+            for i in range(laser_length):
                 laser_name = f"{laser_base_name}_{i}"
                 self.request_meta_data["receive"][laser_name] = ["scalar"]
+                laser_map[laser_name] = i
         self.bind_request_meta_data_callback = bind_request_meta_data
+
+        def bind_response_meta_data() -> None:
+            response_meta_data = self.response_meta_data
+            for i, laser_name in enumerate(response_meta_data["receive"].keys()):
+                laser_id = laser_map[laser_name]
+                laser_ids[laser_id] = i
+        self.bind_response_meta_data_callback = bind_response_meta_data
 
         def bind_send_data() -> None:
             self.send_data = [self.sim_time]
         self.bind_send_data_callback = bind_send_data
 
         def bind_receive_data() -> None:
-            receive_data = self.receive_data[1:]
             if INTERFACE == Interface.ROS1:
                 self._msgs[0].header.stamp = rospy.Time.now()
                 self._msgs[0].header.seq += 1
             elif INTERFACE == Interface.ROS2:
                 self._msgs[0].header.stamp = self.get_clock().now().to_msg()
 
-            for i in range(laser_length):
-                self._msgs[0].ranges[i] = float(receive_data[i])
+            receive_data = numpy.array(self.receive_data[1:], dtype=float)
+            self._msgs[0].ranges = receive_data[laser_ids]
         self.bind_receive_data_callback = bind_receive_data
