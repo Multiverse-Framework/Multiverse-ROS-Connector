@@ -57,11 +57,11 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn Multiv
         {
             if (joint_type == urdf::Joint::PRISMATIC)
             {
-                receive_objects[joint.name] = {"joint_tvalue", "joint_linear_velocity"};
+                receive_objects[joint.name] = {"joint_linear_position", "joint_linear_velocity"};
             }
             else if (joint_type == urdf::Joint::REVOLUTE || joint_type == urdf::Joint::CONTINUOUS)
             {
-                receive_objects[joint.name] = {"joint_rvalue", "joint_angular_velocity"};
+                receive_objects[joint.name] = {"joint_angular_position", "joint_angular_velocity"};
             }
 
             joint_names.push_back(joint.name);
@@ -108,7 +108,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn Multiv
             {
                 if (strcmp(command_interface.name.c_str(), "position") == 0)
                 {
-                    send_objects[actuator_name].insert("cmd_joint_tvalue");
+                    send_objects[actuator_name].insert("cmd_joint_linear_position");
                 }
                 else if (strcmp(command_interface.name.c_str(), "velocity") == 0)
                 {
@@ -127,7 +127,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn Multiv
             {
                 if (strcmp(command_interface.name.c_str(), "position") == 0)
                 {
-                    send_objects[actuator_name].insert("cmd_joint_rvalue");
+                    send_objects[actuator_name].insert("cmd_joint_angular_position");
                 }
                 else if (strcmp(command_interface.name.c_str(), "velocity") == 0)
                 {
@@ -289,7 +289,7 @@ void MultiverseHWInterface::init_send_and_receive_data()
     {
         for (const std::string &attribute_name : send_object.second)
         {
-            if (strcmp(attribute_name.c_str(), "cmd_joint_tvalue") == 0 || strcmp(attribute_name.c_str(), "cmd_joint_rvalue") == 0)
+            if (strcmp(attribute_name.c_str(), "cmd_joint_linear_position") == 0 || strcmp(attribute_name.c_str(), "cmd_joint_angular_position") == 0)
             {
                 send_data_vec.emplace_back(&joint_commands.at(actuators.at(send_object.first))[0]);
             }
@@ -308,7 +308,7 @@ void MultiverseHWInterface::init_send_and_receive_data()
     {
         for (const std::string &attribute_name : receive_object.second)
         {
-            if (strcmp(attribute_name.c_str(), "joint_tvalue") == 0 || strcmp(attribute_name.c_str(), "joint_rvalue") == 0)
+            if (strcmp(attribute_name.c_str(), "joint_linear_position") == 0 || strcmp(attribute_name.c_str(), "joint_angular_position") == 0)
             {
                 receive_data_vec.emplace_back(&joint_states.at(receive_object.first)[0]);
             }
