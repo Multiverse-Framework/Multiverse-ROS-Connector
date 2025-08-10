@@ -59,11 +59,11 @@ class JointStateSubscriber(MultiverseSubscriber):
             joint_velocity = joint_state_msg.velocity[i]
             joint_effort = joint_state_msg.effort[i]
             if joint_type == "revolute":
-                send_data[joint_id_dict[joint_name]["joint_rvalue"]] = joint_position
+                send_data[joint_id_dict[joint_name]["joint_angular_position"]] = joint_position
                 send_data[joint_id_dict[joint_name]["joint_angular_velocity"]] = joint_velocity
                 send_data[joint_id_dict[joint_name]["joint_torque"]] = joint_effort
             elif joint_type == "prismatic":
-                send_data[joint_id_dict[joint_name]["joint_tvalue"]] = joint_position
+                send_data[joint_id_dict[joint_name]["joint_linear_position"]] = joint_position
                 send_data[joint_id_dict[joint_name]["joint_linear_velocity"]] = joint_velocity
                 send_data[joint_id_dict[joint_name]["joint_forque"]] = joint_effort
 
@@ -83,13 +83,13 @@ class JointStateSubscriber(MultiverseSubscriber):
                 continue
             if joint_type == "revolute":
                 self.request_meta_data["send"][joint_name] = [
-                    "joint_rvalue",
+                    "joint_angular_position",
                     "joint_angular_velocity",
                     "joint_torque",
                 ]
             elif joint_type == "prismatic":
                 self.request_meta_data["send"][joint_name] = [
-                    "joint_tvalue",
+                    "joint_linear_position",
                     "joint_linear_velocity",
                     "joint_forque",
                 ]
