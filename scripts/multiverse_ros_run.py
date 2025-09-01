@@ -4,7 +4,13 @@ import argparse
 import dataclasses
 import json
 import yaml
+import os
+import sys
 from typing import Dict, List
+
+current_dir = os.path.dirname(__file__)
+src_dir = os.path.abspath(os.path.join(current_dir, '..', 'src'))
+sys.path.insert(0, src_dir)
 
 from multiverse_ros_socket.multiverse_node.multiverse_node import MultiverseNode
 from multiverse_ros_socket.multiverse_node.multiverse_node import Interface, INTERFACE
