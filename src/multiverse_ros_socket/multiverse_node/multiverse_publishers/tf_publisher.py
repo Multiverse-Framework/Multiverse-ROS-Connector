@@ -18,7 +18,7 @@ from .multiverse_publisher import MultiversePublisher, MultiverseMetaData
 class TfPublisher(MultiversePublisher):
     _use_meta_data = True
     _msg_types = [TFMessage]
-    _root_frame_id: str
+    _frame_id: str
     _seq: int = 0
 
     def __init__(
@@ -29,15 +29,15 @@ class TfPublisher(MultiversePublisher):
             multiverse_meta_data: MultiverseMetaData = MultiverseMetaData(),
             **kwargs: Dict
     ) -> None:
-        self._root_frame_id = kwargs.get("root_frame_id", "map")
-        if INTERFACE == Interface.ROS1:
-            self._seq = 0
         super().__init__(
             topic_name=topic_name,
             rate=rate,
             port=port,
             multiverse_meta_data=multiverse_meta_data,
         )
+        self._frame_id = kwargs.get("frame_id", "map")
+        if INTERFACE == Interface.ROS1:
+            self._seq = 0
 
         def bind_request_meta_data() -> None:
             request_meta_data = self.request_meta_data
@@ -53,7 +53,7 @@ class TfPublisher(MultiversePublisher):
 
             self._msgs[0].transforms.clear()
             header = Header()
-            header.frame_id = self._root_frame_id
+            header.frame_id = self._frame_id
             if INTERFACE == Interface.ROS1:
                 header.seq = self._seq
                 header.stamp = rospy.Time.now()

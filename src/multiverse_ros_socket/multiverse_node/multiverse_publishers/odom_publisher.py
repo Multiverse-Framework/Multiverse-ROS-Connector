@@ -27,20 +27,19 @@ class OdomPublisher(MultiversePublisher):
             multiverse_meta_data: MultiverseMetaData = MultiverseMetaData(),
             **kwargs: Dict
     ) -> None:
-        if "body" not in kwargs:
-            raise Exception("body not found.")
         if "odom_topic" not in kwargs:
             raise Exception("odom_topic not found.")
         if "tf_topic" not in kwargs:
             raise Exception("tf_topic not found.")
-        self._body_name = str(kwargs["body"])
-        self._frame_id = str(kwargs.get("frame_id", "map"))
         super().__init__(
             port=port,
             topic_name=[kwargs["odom_topic"], kwargs["tf_topic"]],
             rate=rate,
             multiverse_meta_data=multiverse_meta_data,
         )
+        assert "body" in kwargs, "Body not found."
+        self._body_name = str(kwargs["body"])
+        self._frame_id = str(kwargs.get("frame_id", "map"))
 
         def bind_request_meta_data() -> None:
             self.request_meta_data["receive"][self._body_name] = [
