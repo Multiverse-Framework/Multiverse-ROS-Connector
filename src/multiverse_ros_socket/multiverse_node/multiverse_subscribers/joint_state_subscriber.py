@@ -29,7 +29,7 @@ class JointStateSubscriber(MultiverseSubscriber):
     def _bind_send_data(self, joint_state_msg: JointState) -> None:
         if "send" not in self.response_meta_data or self.response_meta_data["send"] == {}:
             self.__bind_request_meta_data(joint_state_msg)
-            self.communicate(True)
+            self._communicate(True)
 
         joint_id_dict = {}
         idx = 0
@@ -46,7 +46,7 @@ class JointStateSubscriber(MultiverseSubscriber):
                 joint_id_dict[joint_name][attribute_name] = idx
                 idx += len(attribute_data)
 
-        send_data = [self.sim_time] + [0.0] * idx
+        send_data = [0.0] * idx
 
         for i in range(len(joint_state_msg.name)):
             joint_name = joint_state_msg.name[i]
@@ -65,14 +65,13 @@ class JointStateSubscriber(MultiverseSubscriber):
             elif joint_type == "prismatic":
                 send_data[joint_id_dict[joint_name]["joint_linear_position"]] = joint_position
                 send_data[joint_id_dict[joint_name]["joint_linear_velocity"]] = joint_velocity
-                send_data[joint_id_dict[joint_name]["joint_forque"]] = joint_effort
+                send_data[joint_id_dict[joint_name]["joint_force"]] = joint_effort
 
-        self.send_data = send_data
+        self.send_data = [self.sim_time] + send_data
 
     def __bind_request_meta_data(self, joint_state_msg: JointState) -> None:
         self.request_meta_data["send"] = {}
-        for i in range(len(joint_state_msg.name)):
-            joint_name = joint_state_msg.name[i]
+        for joint_name in joint_state_msg.name:
             if isinstance(self._joint_types, dict):
                 if joint_name not in self._joint_types:
                     continue
@@ -91,5 +90,5 @@ class JointStateSubscriber(MultiverseSubscriber):
                 self.request_meta_data["send"][joint_name] = [
                     "joint_linear_position",
                     "joint_linear_velocity",
-                    "joint_forque",
+                    "joint_force",
                 ]
