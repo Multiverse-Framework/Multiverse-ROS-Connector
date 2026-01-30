@@ -41,7 +41,7 @@ public:
     ~MultiverseHWInterface();
 
 public:
-    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_init(const hardware_interface::HardwareInfo &info) override;
+    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_init(const hardware_interface::HardwareComponentInterfaceParams &info) override;
 
     std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 

@@ -21,7 +21,7 @@
 #include "multiverse_hw_interface.h"
 #include <urdf/model.h>
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn MultiverseHWInterface::on_init(const hardware_interface::HardwareInfo &info)
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn MultiverseHWInterface::on_init(const hardware_interface::HardwareComponentInterfaceParams &info)
 {
     if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS)
     {
@@ -50,30 +50,30 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn Multiv
 
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
-        receive_objects[joint.name] = {};
-
         auto joint_type = urdf_model.getJoint(joint.name)->type;
-        if (joint_type == urdf::Joint::PRISMATIC || joint_type == urdf::Joint::REVOLUTE || joint_type == urdf::Joint::CONTINUOUS)
-        {
-            if (joint_type == urdf::Joint::PRISMATIC)
-            {
-                receive_objects[joint.name] = {"joint_linear_position", "joint_linear_velocity"};
-            }
-            else if (joint_type == urdf::Joint::REVOLUTE || joint_type == urdf::Joint::CONTINUOUS)
-            {
-                receive_objects[joint.name] = {"joint_angular_position", "joint_angular_velocity"};
-            }
-
-            joint_names.push_back(joint.name);
-            joint_states[joint.name] = (double *)calloc(2, sizeof(double));
-            joint_commands[joint.name] = (double *)calloc(3, sizeof(double));
-
-            init_joint_positions[joint.name] = 0.0;
-        }
-        else
+        if (joint_type != urdf::Joint::PRISMATIC &&
+            joint_type != urdf::Joint::REVOLUTE &&
+            joint_type != urdf::Joint::CONTINUOUS)
         {
             RCLCPP_WARN(rclcpp::get_logger("multiverse_hw_interface"), "Joint %s is not prismatic, revolute or continuous, will be ignored", joint.name.c_str());
+            continue;
         }
+        receive_objects[joint.name] = {};
+
+        if (joint_type == urdf::Joint::PRISMATIC)
+        {
+            receive_objects[joint.name] = {"joint_linear_position", "joint_linear_velocity"};
+        }
+        else if (joint_type == urdf::Joint::REVOLUTE || joint_type == urdf::Joint::CONTINUOUS)
+        {
+            receive_objects[joint.name] = {"joint_angular_position", "joint_angular_velocity"};
+        }
+
+        joint_names.push_back(joint.name);
+        joint_states[joint.name] = (double *)calloc(2, sizeof(double));
+        joint_commands[joint.name] = (double *)calloc(3, sizeof(double));
+
+        init_joint_positions[joint.name] = 0.0;
 
         for (const hardware_interface::InterfaceInfo &state_interface : joint.state_interfaces)
         {
